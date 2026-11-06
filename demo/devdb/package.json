@@ -1,0 +1,13 @@
+{
+  "name": "devdb",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Throwaway local MongoDB (mongodb-memory-server) on 127.0.0.1:27017 so the dental demo backend can run without a system MongoDB install.",
+  "scripts": {
+    "start": "node start-db.mjs"
+  },
+  "devDependencies": {
+    "mongodb-memory-server": "^10.1.4"
+  }
+}

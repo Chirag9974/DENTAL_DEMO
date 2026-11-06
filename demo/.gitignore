@@ -1,0 +1,5 @@
+.demo-servers.json
+**/node_modules/
+*.log
+frontend/dist/
+devdb/data/

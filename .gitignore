@@ -1,0 +1,44 @@
+# Dependencies
+node_modules/
+
+# Environment secrets (keep the examples)
+.env
+.env.*
+!.env.example
+!**/.env.example
+*.pem
+*.key
+
+# Build output
+dist/
+build/
+*.tsbuildinfo
+
+# Logs and runtime state
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.demo-servers.json
+
+# Local database / uploads
+demo/devdb/data/
+*.sqlite
+*.db
+
+# Generated screenshots and recordings
+screenshots/
+
+# Test output
+coverage/
+.nyc_output/
+
+# Editors and OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Agent/tool state
+.freebuff/
+.cloud-attachments/
