@@ -1,3 +1,6 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import express from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
@@ -8,6 +11,9 @@ import { config } from './config/env.js';
 import publicRoutes from './routes/public.routes.js';
 import adminRoutes from './routes/admin.routes.js';
 import { apiLimiter, noStore } from './middleware/security.js';
+
+const here = path.dirname(fileURLToPath(import.meta.url));
+const frontendDist = path.resolve(here, '../../demo/frontend/dist');
 
 /**
  * Express app factory. Middleware order matters:
@@ -25,9 +31,27 @@ export function buildApp() {
   app.use(
     helmet({
       crossOriginResourcePolicy: { policy: 'cross-origin' },
+      frameguard: { action: 'deny' },
       // HSTS is meaningless over plain HTTP and only safe once HTTPS is real.
       hsts: config.isProd ? { maxAge: 15552000, includeSubDomains: true } : false,
       referrerPolicy: { policy: 'no-referrer' },
+      contentSecurityPolicy: {
+        useDefaults: false,
+        directives: {
+          defaultSrc: ["'self'"],
+          scriptSrc: ["'self'"],
+          scriptSrcAttr: ["'none'"],
+          styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
+          fontSrc: ["'self'", 'https://fonts.gstatic.com'],
+          imgSrc: ["'self'", 'data:'],
+          connectSrc: ["'self'"],
+          objectSrc: ["'none'"],
+          baseUri: ["'self'"],
+          formAction: ["'self'"],
+          frameAncestors: ["'none'"],
+          ...(config.isProd ? { upgradeInsecureRequests: [] } : {}),
+        },
+      },
     })
   );
 
@@ -64,6 +88,30 @@ export function buildApp() {
   app.use('/api', apiLimiter);
   app.use('/api', publicRoutes);
   app.use('/api/admin', noStore, adminRoutes);
+
+  // Production: serve the built React app from the same origin as the API.
+  // This keeps the admin cookie first-party and lets the CSP stay at 'self'.
+  if (config.serveFrontend) {
+    const indexFile = path.join(frontendDist, 'index.html');
+    if (fs.existsSync(indexFile)) {
+      app.use(
+        express.static(frontendDist, {
+          index: false,
+          maxAge: '1h',
+          setHeaders(res, filePath) {
+            if (filePath.endsWith('.html')) res.setHeader('Cache-Control', 'no-store');
+          },
+        })
+      );
+      app.get('*', (req, res, next) => {
+        if (req.path.startsWith('/api') || req.path === '/health') return next();
+        res.setHeader('Cache-Control', 'no-store');
+        res.sendFile(indexFile);
+      });
+    } else {
+      console.warn('[web] frontend build not found at', frontendDist);
+    }
+  }
 
   app.use((req, res) => {
     res.status(404).json({ success: false, error: `Route not found: ${req.method} ${req.path}` });

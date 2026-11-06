@@ -53,6 +53,9 @@ if (isProd && frontendUrls.some((u) => /localhost|127\.0\.0\.1|\[::1\]/.test(u))
 export const config = {
   env: process.env.NODE_ENV || 'development',
   isProd,
+  // In production the API also serves the built site (one origin, one service).
+  // SERVE_FRONTEND=true enables the same behaviour for a local production test.
+  serveFrontend: isProd || String(process.env.SERVE_FRONTEND || 'false') === 'true',
   port: Number(process.env.PORT || 5000),
   trustProxy: parseTrustProxy(process.env.TRUST_PROXY),
   frontendUrls,

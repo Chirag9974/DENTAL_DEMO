@@ -70,11 +70,16 @@ Never commit `.env` — only `.env.example` is tracked. For production, set a
 strong `JWT_SECRET`, keep `COOKIE_SECURE` on, terminate TLS in front of the API,
 and set `TRUST_PROXY` only to the proxy you control.
 
-## Build
+## Build & deploy
 
 ```bash
 cd demo/frontend && npm run build
 ```
 
-Deploy `dist/` to any static host (it includes `_headers`) and run the API with
-the production environment variables.
+For a single-origin deployment, run the API with `NODE_ENV=production`; Express
+serves `demo/frontend/dist` itself, so the admin cookie stays first-party and the
+CSP can stay at `'self'`. That is how the Render service is configured: build
+the backend and frontend, seed, then `npm start` from `backend/`.
+
+You can also host `dist/` on any static host (it includes `_headers`) and point
+`VITE_API_BASE` at the API, but the admin cookie then needs cross-origin setup.

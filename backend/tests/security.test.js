@@ -238,7 +238,8 @@ describe('security: HTTP hardening', () => {
     assert.equal(res.status, 200);
     assert.equal(res.headers.get('x-powered-by'), null);
     assert.equal(res.headers.get('x-content-type-options'), 'nosniff');
-    assert.equal(res.headers.get('x-frame-options'), 'SAMEORIGIN');
+    assert.equal(res.headers.get('x-frame-options'), 'DENY');
+    assert.match(res.headers.get('content-security-policy') || '', /frame-ancestors 'none'/);
     assert.equal(res.headers.get('referrer-policy'), 'no-referrer');
     assert.match(res.headers.get('cache-control') || '', /no-store/);
   });
