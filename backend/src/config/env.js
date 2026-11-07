@@ -73,6 +73,9 @@ export const config = {
     name: process.env.ADMIN_NAME || 'Clinic Admin',
     email: process.env.ADMIN_EMAIL || 'admin@demodentalcare.com',
     password: process.env.ADMIN_PASSWORD || 'ChangeMe123!',
+    // Demo-only escape hatch: skip the 12-character production minimum.
+    // Never enable this for a real clinic deployment.
+    allowWeakPassword: String(process.env.ALLOW_WEAK_ADMIN_PASSWORD || 'false') === 'true',
   },
 
   email: {

@@ -32,8 +32,15 @@ async function main() {
     if (config.adminSeed.password === 'ChangeMe123!') {
       throw new Error('Refusing to seed with the default ADMIN_PASSWORD in production. Set a strong one first.');
     }
-    if (config.adminSeed.password.length < 12) {
-      throw new Error('ADMIN_PASSWORD must be at least 12 characters in production.');
+    if (!config.adminSeed.allowWeakPassword && config.adminSeed.password.length < 12) {
+      // Demo deploys can set ALLOW_WEAK_ADMIN_PASSWORD=true to skip this rule.
+      throw new Error(
+        'ADMIN_PASSWORD must be at least 12 characters in production ' +
+        '(or set ALLOW_WEAK_ADMIN_PASSWORD=true for a demo deployment).'
+      );
+    }
+    if (config.adminSeed.allowWeakPassword) {
+      console.warn('[seed] ALLOW_WEAK_ADMIN_PASSWORD=true — skipping the 12-character minimum. Demo only; remove it before a real launch.');
     }
   }
 

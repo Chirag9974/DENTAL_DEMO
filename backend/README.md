@@ -52,4 +52,4 @@ HTTPS in prod · secrets in env only · HttpOnly `SameSite=Lax` cookie (host-pre
 
 `TRUST_PROXY` is empty by default: only set it to `1` (or the address of a proxy you control) when the API is actually behind one. Otherwise callers can spoof `X-Forwarded-For` and defeat IP rate limits.
 
-Production startup refuses a missing/short `JWT_SECRET`, the seed refuses the demo password or anything under 12 characters, and `COOKIE_SECURE` is forced on.
+Production startup refuses a missing/short `JWT_SECRET`, the seed refuses the demo password or anything under 12 characters, and `COOKIE_SECURE` is forced on. For a temporary demo deploy, set `ALLOW_WEAK_ADMIN_PASSWORD=true` to bypass the 12-character seed minimum; remove it and re-seed with a strong password before a real launch.

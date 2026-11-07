@@ -70,6 +70,10 @@ Never commit `.env` — only `.env.example` is tracked. For production, set a
 strong `JWT_SECRET`, keep `COOKIE_SECURE` on, terminate TLS in front of the API,
 and set `TRUST_PROXY` only to the proxy you control.
 
+For a temporary demo deploy you can set `ALLOW_WEAK_ADMIN_PASSWORD=true` so the
+seed accepts a shorter `ADMIN_PASSWORD` (12+ characters is otherwise enforced in
+production). Remove it and use a strong password before a real launch.
+
 ## Build & deploy
 
 ```bash
